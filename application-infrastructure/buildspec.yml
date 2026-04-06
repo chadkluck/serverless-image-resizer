@@ -64,13 +64,15 @@ phases:
       - cd ../../../../..
 
       # Build Sharp layer (arm64/linux native binary)
-      # Set npm config env vars to force cross-platform resolution for arm64 Lambda.
-      # CLI flags like --arch/--platform are unreliable; env vars override npm's
-      # platform detection at the config level.
-      - cd application-infrastructure/src/lambda/layers/sharp-arm64/nodejs
-      - rm -rf node_modules package-lock.json
-      - npm_config_arch=arm64 npm_config_platform=linux npm install
-      - cd ../../../../../..
+      # Download pre-built Sharp for arm64 Lambda from pH200/sharp-layer.
+      # Cross-platform npm install is unreliable for native binaries on x64 CodeBuild.
+      # See: https://github.com/pH200/sharp-layer
+      - cd application-infrastructure/src/lambda/layers/sharp-arm64
+      - rm -rf nodejs
+      - curl -L -o sharp-layer.zip https://github.com/pH200/sharp-layer/releases/latest/download/release-arm64.zip
+      - unzip -q sharp-layer.zip -d .
+      - rm sharp-layer.zip
+      - cd ../../../../..
 
       # Install dev dependencies and run tests
       # NODE_ENV may be set to 'production' by the pipeline, which causes
