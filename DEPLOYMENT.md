@@ -2,7 +2,7 @@
 
 This application is **Ready-to-Deploy-and-Run** with the [63Klabs Atlantis Templates and Scripts Platform for Serverless Deployments on AWS](https://github.com/63Klabs/atlantis)
 
-- Use the Atlantis scripts from your organizations central SAM Config infrastructure repository to manage your application's repository and deployment.
+- Use the Atlantis scripts from your organization's central SAM Config infrastructure repository to manage your application's repository and deployment.
 - Add a pipeline to each branch in your repository you want to deploy from (`test`, `beta`, `main`)
 - Make all code changes in the `dev` branch.
 - To initiate a deployment, just merge your code from the `dev` branch to the `test` branch and push. This will kick-off the test deployment pipeline.
@@ -96,3 +96,77 @@ For each branch you wish to deploy from, set up a pipeline using your organizati
 # Deploy the pipeline
 ./cli/deploy.py pipeline PREFIX YOUR_PROJECT_ID beta
 ```
+
+## Setting Up Destination Bucket(s)
+
+This application is intended to place resized images in an S3 bucket using Origin Access Controle (OAC) behind a CloudFront distribution.
+
+Any bucket, existing or new, must have the `AllowImageResizerEvents` tag set to `true`. The `imageResizer:ImageOutputBasePrefix` is optional.
+
+```
+AllowImageResizerEvents=true
+imageResizer:ImageOutputBasePrefix=/path/to/public/images
+```
+
+By default, `ImageOutputBasePrefix` is set to `/{stageId}/public/images` and can be changed globally as a deployment parameter.
+
+### Existing Buckets
+
+If you have an existing bucket, just add the necessary `AllowImageResizerEvents` tag and optionally the `imageResizer:ImageOutputBasePrefix`
+
+### New Buckets and CloudFront Distribution using Atlantis
+
+Atlanis has deployment templates available to create new S3 buckets with OAC fronted by CloudFront.
+
+From your organization's SAM Config repository:
+
+#### Create Bucket
+
+For your first bucket, leave defaults unless specified below. Replace `acme`, `my-assets`, and `--profile default` with your own `Prefix`, `ProjectId`, and default profile.
+
+```bash
+./cli/config.py storage acme my-assets --profile default
+# - Choose the S3 OAC template
+# - When asked for tags add:
+#   - AllowImageResizerEvents=true
+# (Optionally, add imageResizer:ImageOutputBasePrefix if you don't want to use the default)
+
+./cli/deploy.py storage acme my-assets --profile default
+# - You will need the S3 Domain from the OUTPUTS section
+```
+
+#### Create CloudFront Distribution
+
+For your first distribution deployment, leave defaults unless specified below. Replace `acme`, `my-assets`, and `--profile default` with your own `Prefix`, `ProjectId`, and default profile.
+
+```bash
+./cli/config.py network acme my-assets test --profile default
+# - Choose the CloudFront dist with Route53 (you don't need to configure Route53)
+# - Use the S3 Origin Domain supplied from the previous output
+# - Leave the defaults
+
+./cli/deploy.py network acme my-assets test --profile default
+```
+
+## Test
+
+Once the Resizer application stack, S3 buckets, and CloudFront distribution is set up, you can perform a manual upload to test (be sure to replace values with your own):
+
+```bash
+aws s3api put-object \
+  --bucket my-assets \
+  --key uploads/batch1/photo.jpg \
+  --body ./photo.jpg \
+  --content-type image/jpeg \
+  --tagging "ImageOutputBucket=my-output-bucket&ImageOutputPath=posts/2026-05-09&stageId=test"
+```
+
+Rather than uploading manually, you will most likely want to create a script or automated process that executes the `put-object` request with the necessary tags.
+
+Additional information regarding uploading images may be found in [End-User Documentation](./docs/end-user/README.md).
+
+## Optional CloudFront Cache Invalidation
+
+Atlantis has a ready-to-deploy CloudFront cache invalidator service that much like this application, can monitor multiple buckets and submit invalidation requests in consolidated batches.
+
+Once you have this application deployed, configured, and working to your expections, check out [Serverless Multi-Bucket CloudFront Invalidation Service](https://github.com/63Klabs/atlantis-starter-03-serverless-cloudfront-cache-invalidation).

@@ -71,7 +71,7 @@ phases:
       # Install dev dependencies and run tests
       - cd application-infrastructure
       - npm install
-      - npx jest --config test/jest.config.mjs --ci --coverage
+      - npm run test:ci
       - cd ..
 
       # Create a parameter in SSM Parameter store if it does not yet exist:
