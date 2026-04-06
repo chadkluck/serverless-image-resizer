@@ -265,6 +265,7 @@ Resources:
 
   SourceBucket:
     Type: AWS::S3::Bucket
+    DependsOn: ProcessingQueuePolicy
     DeletionPolicy: Retain
     UpdateReplacePolicy: Retain
     Properties:
@@ -337,7 +338,10 @@ Resources:
             Resource: !GetAtt ProcessingQueue.Arn
             Condition:
               ArnLike:
-                aws:SourceArn: !GetAtt SourceBucket.Arn
+                aws:SourceArn: !If
+                  - UseS3BucketNameOrgPrefix
+                  - !Sub 'arn:aws:s3:::${S3BucketNameOrgPrefix}-${Prefix}-${ProjectId}-${StageId}-${AWS::AccountId}-${AWS::Region}-an'
+                  - !Sub 'arn:aws:s3:::${Prefix}-${ProjectId}-${StageId}-${AWS::AccountId}-${AWS::Region}-an'
 
   # ---------------------------------------------------------------------------
   # Lambda Layer and Function
