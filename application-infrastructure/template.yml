@@ -242,10 +242,15 @@ Conditions:
   HasPermissionsBoundaryArn: !Not [!Equals [!Ref PermissionsBoundaryArn, ""]]
   CreateAlarms: !Equals [!Ref DeployEnvironment, "PROD"]
   UseS3BucketNameOrgPrefix: !Not [!Equals [!Ref S3BucketNameOrgPrefix, ""]]
-  SourceBucketArchiveMode: !If
-    - IsProduction
+  SourceBucketArchiveModeProd: !And
+    - !Condition IsProduction
     - !Equals [!Ref SourceBucketRetentionInDaysForPROD, 0]
+  SourceBucketArchiveModeDevTest: !And
+    - !Not [!Condition IsProduction]
     - !Equals [!Ref SourceBucketRetentionInDaysForDEVTEST, 0]
+  SourceBucketArchiveMode: !Or
+    - !Condition SourceBucketArchiveModeProd
+    - !Condition SourceBucketArchiveModeDevTest
 
 # =============================================================================
 # RESOURCES
@@ -260,7 +265,7 @@ Resources:
 
   SourceBucket:
     Type: AWS::S3::Bucket
-    DeletionPolicy: !If [IsProduction, Retain, Delete]
+    DeletionPolicy: Retain
     UpdateReplacePolicy: Retain
     Properties:
       BucketName: !If
