@@ -64,8 +64,10 @@ phases:
       - cd ../../../../..
 
       # Build Sharp layer (arm64/linux native binary)
+      # Use npm config to force the correct platform since --arch/--platform flags
+      # are unreliable for Sharp's optional dependency resolution
       - cd application-infrastructure/src/lambda/layers/sharp-arm64/nodejs
-      - npm install --arch=arm64 --platform=linux
+      - npm install --cpu=arm64 --os=linux --include=optional
       - cd ../../../../../..
 
       # Install dev dependencies and run tests
