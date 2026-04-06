@@ -86,19 +86,23 @@ describe('Property 5: Output path resolution with placeholder substitution', () 
 
           // --- Verify: stageId tag is ignored when no placeholder exists ---
           if (bucketBasePrefix !== null && bucketBasePrefix !== '' && !bucketBasePrefix.includes('@stageId')) {
-            // The bucket prefix has no placeholder, so stageId should not appear
-            // in the base prefix portion. We verify the result starts with the
-            // original bucket prefix (unchanged).
-            expect(result.startsWith(bucketBasePrefix)).toBe(true);
+            // The bucket prefix has no placeholder — the result should start
+            // with the bucket prefix (minus any leading slash, since leading
+            // slashes are stripped for S3 key safety).
+            const expectedStart = bucketBasePrefix.startsWith('/')
+              ? bucketBasePrefix.slice(1)
+              : bucketBasePrefix;
+            expect(result.startsWith(expectedStart)).toBe(true);
           }
 
           // --- Verify: Path ends with `/` ---
           expect(result.endsWith('/')).toBe(true);
 
-          // --- Verify: No double slashes (except possibly leading `/`) ---
-          // Strip a single leading slash, then check for `//`
-          const withoutLeadingSlash = result.startsWith('/') ? result.slice(1) : result;
-          expect(withoutLeadingSlash).not.toContain('//');
+          // --- Verify: No leading slash (S3 keys should not start with /) ---
+          expect(result.startsWith('/')).toBe(false);
+
+          // --- Verify: No double slashes ---
+          expect(result).not.toContain('//');
 
           // --- Verify: ImageOutputPath is empty string when tag is absent ---
           if (imageOutputPath === undefined) {

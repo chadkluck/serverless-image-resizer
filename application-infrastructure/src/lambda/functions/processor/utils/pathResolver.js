@@ -22,7 +22,7 @@
  *   'prod',
  *   'myImage'
  * );
- * console.log(path); // '/web/prod/public/img/posts/2026-05-09/myImage/'
+ * console.log(path); // 'web/prod/public/img/posts/2026-05-09/myImage/'
  */
 
 /**
@@ -49,12 +49,12 @@
  * @example
  * // Stack parameter fallback with {stageId}
  * resolveOutputPath(null, '/{stageId}/public/images', {}, 'test', 'photo');
- * // → '/test/public/images/photo/'
+ * // → 'test/public/images/photo/'
  *
  * @example
  * // No placeholder — stageId ignored
  * resolveOutputPath('/static/images', '/{stageId}/public/images', {}, 'prod', 'hero');
- * // → '/static/images/hero/'
+ * // → 'static/images/hero/'
  */
 function resolveOutputPath(bucketBasePrefix, stackBasePrefix, objectTags, stageId, originalFileName) {
   const tags = objectTags || {};
@@ -76,12 +76,14 @@ function resolveOutputPath(bucketBasePrefix, stackBasePrefix, objectTags, stageI
 
   const joined = segments.join('/');
 
-  // Collapse any accidental double (or more) slashes into single slashes,
-  // but preserve a leading slash if present
+  // Collapse any accidental double (or more) slashes into single slashes
   const cleaned = joined.replace(/\/{2,}/g, '/');
 
+  // Remove leading slash — S3 keys should not start with /
+  const trimmed = cleaned.startsWith('/') ? cleaned.slice(1) : cleaned;
+
   // Ensure trailing slash
-  return cleaned.endsWith('/') ? cleaned : cleaned + '/';
+  return trimmed.endsWith('/') ? trimmed : trimmed + '/';
 }
 
 export { resolveOutputPath };

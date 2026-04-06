@@ -21,7 +21,7 @@ describe('pathResolver – resolveOutputPath', () => {
         'prod',
         'myImage'
       );
-      expect(result).toBe('/web/prod/public/img/posts/2026-05-09/myImage/');
+      expect(result).toBe('web/prod/public/img/posts/2026-05-09/myImage/');
     });
 
     it('should replace multiple @stageId occurrences', () => {
@@ -32,7 +32,7 @@ describe('pathResolver – resolveOutputPath', () => {
         'test',
         'hero'
       );
-      expect(result).toBe('/test/assets/test/hero/');
+      expect(result).toBe('test/assets/test/hero/');
     });
   });
 
@@ -45,7 +45,7 @@ describe('pathResolver – resolveOutputPath', () => {
         'test',
         'photo'
       );
-      expect(result).toBe('/test/public/images/photo/');
+      expect(result).toBe('test/public/images/photo/');
     });
 
     it('should replace {stageId} when bucket tag prefix is empty string', () => {
@@ -56,7 +56,7 @@ describe('pathResolver – resolveOutputPath', () => {
         'beta',
         'sunset'
       );
-      expect(result).toBe('/beta/public/images/gallery/sunset/');
+      expect(result).toBe('beta/public/images/gallery/sunset/');
     });
 
     it('should replace {stageId} when bucket tag prefix is undefined', () => {
@@ -67,7 +67,7 @@ describe('pathResolver – resolveOutputPath', () => {
         'staging',
         'banner'
       );
-      expect(result).toBe('/staging/cdn/banner/');
+      expect(result).toBe('staging/cdn/banner/');
     });
   });
 
@@ -80,7 +80,7 @@ describe('pathResolver – resolveOutputPath', () => {
         'prod',
         'logo'
       );
-      expect(result).toBe('/static/images/logo/');
+      expect(result).toBe('static/images/logo/');
       expect(result).not.toMatch(/\/\//);
     });
 
@@ -92,7 +92,7 @@ describe('pathResolver – resolveOutputPath', () => {
         'prod',
         'logo'
       );
-      expect(result).toBe('/static/images/logo/');
+      expect(result).toBe('static/images/logo/');
       expect(result).not.toMatch(/\/\//);
     });
 
@@ -104,7 +104,7 @@ describe('pathResolver – resolveOutputPath', () => {
         'prod',
         'avatar'
       );
-      expect(result).toBe('/media/avatar/');
+      expect(result).toBe('media/avatar/');
     });
   });
 
@@ -117,7 +117,7 @@ describe('pathResolver – resolveOutputPath', () => {
         'prod',
         'hero'
       );
-      expect(result).toBe('/static/images/hero/');
+      expect(result).toBe('static/images/hero/');
     });
 
     it('should ignore stageId when stack parameter has no placeholder and bucket tag is null', () => {
@@ -128,7 +128,7 @@ describe('pathResolver – resolveOutputPath', () => {
         'prod',
         'icon'
       );
-      expect(result).toBe('/fixed/path/icon/');
+      expect(result).toBe('fixed/path/icon/');
     });
   });
 
@@ -141,7 +141,7 @@ describe('pathResolver – resolveOutputPath', () => {
         'prod',
         'file'
       );
-      expect(result).toBe('/bucket-tag-path/prod/content/file/');
+      expect(result).toBe('bucket-tag-path/prod/content/file/');
     });
 
     it('should use bucket tag prefix even without placeholders', () => {
@@ -152,7 +152,7 @@ describe('pathResolver – resolveOutputPath', () => {
         'test',
         'img'
       );
-      expect(result).toBe('/custom/output/img/');
+      expect(result).toBe('custom/output/img/');
     });
   });
 
@@ -165,7 +165,7 @@ describe('pathResolver – resolveOutputPath', () => {
         'prod',
         'cover'
       );
-      expect(result).toBe('/prod/public/images/articles/cover/');
+      expect(result).toBe('prod/public/images/articles/cover/');
     });
 
     it('should fall back to stack parameter when bucket tag is empty', () => {
@@ -176,7 +176,7 @@ describe('pathResolver – resolveOutputPath', () => {
         'dev',
         'thumb'
       );
-      expect(result).toBe('/dev/public/images/thumb/');
+      expect(result).toBe('dev/public/images/thumb/');
     });
 
     it('should fall back to stack parameter when bucket tag is undefined', () => {
@@ -187,7 +187,7 @@ describe('pathResolver – resolveOutputPath', () => {
         'prod',
         'landscape'
       );
-      expect(result).toBe('/static/assets/photos/landscape/');
+      expect(result).toBe('static/assets/photos/landscape/');
     });
   });
 });
