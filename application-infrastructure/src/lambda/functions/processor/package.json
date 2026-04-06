@@ -1,0 +1,9 @@
+{
+  "name": "image-resizer-processor",
+  "version": "0.0.1",
+  "description": "Processes uploaded images: resize, WebP conversion, metadata generation",
+  "type": "module",
+  "main": "handler.js",
+  "author": "63Klabs",
+  "license": "MIT"
+}

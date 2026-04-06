@@ -1,0 +1,16 @@
+{
+  "name": "image-resizer-infrastructure",
+  "version": "0.0.1",
+  "description": "Serverless Image Resizer - application infrastructure and tests",
+  "type": "module",
+  "scripts": {
+    "test": "node --experimental-vm-modules node_modules/jest/bin/jest.js --config test/jest.config.mjs"
+  },
+  "devDependencies": {
+    "@jest/globals": "^30.0.2",
+    "aws-sdk-client-mock": "^4.1.0",
+    "aws-sdk-client-mock-jest": "^4.1.0",
+    "fast-check": "^4.1.1",
+    "jest": "^30.0.2"
+  }
+}

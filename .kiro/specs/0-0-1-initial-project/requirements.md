@@ -175,6 +175,8 @@ This document defines the requirements for a Serverless Image Resizer applicatio
 2. THE Image_Resizer documentation SHALL provide example AWS CLI commands for uploading images and JSON files with the required object tags (`ImageOutputBucket`, `ImageOutputPath`, `stageId`)
 3. THE Image_Resizer documentation SHALL describe the required bucket tags (`AllowImageResizerEvents`, `imageResizer:ImageOutputBasePrefix`) and their expected values including the `@stageId` placeholder format
 
+**TODO ADD:** This client developer documentation should be considered End-User documentation and documented in the docs/end-user directory. Follow #9 of AGENTS.md for organizing documentation to meet audience needs.
+
 ### Requirement 14: Logging and observability
 
 **User Story:** As a system operator, I want meaningful log output for processing decisions so that I can troubleshoot failures and monitor system behavior without excessive log volume.
@@ -185,6 +187,8 @@ This document defines the requirements for a Serverless Image Resizer applicatio
 2. THE Processor_Lambda SHALL not log full AWS SDK client responses
 3. THE Processor_Lambda SHALL use a configurable log level controlled by the `LOG_LEVEL` environment variable
 4. IF an error occurs during image processing, THEN THE Processor_Lambda SHALL log the error details including the source object key, the Output_Bucket name, and the error message
+
+**TODO ADD:** Following #9 of AGENTS.md, there should be documentation for checking error logs and queues (including sample log filters or CLI commands) for the admin-ops audience.
 
 ### Requirement 15: Settings and configuration management
 

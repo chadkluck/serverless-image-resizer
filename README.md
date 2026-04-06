@@ -1,21 +1,42 @@
-# Basic API Gateway with Lambda Function Written in Node.js
+# Serverless Image Resizer
 
-A very simple example to demonstrate Atlantis Template for AWS CodePipeline to provision a web service that utilizes API Gateway and a simple Lambda function written in Node.js.
+An event-driven image processing pipeline on AWS. Images uploaded to a source S3 bucket are automatically queued via SQS and processed by a Lambda function that resizes into multiple size tiers, generates WebP variants, extracts EXIF metadata, and writes outputs to dynamically determined destination buckets.
 
 | | Build/Deploy | Application Stack |
 |---|---|---|
 | **Languages** | Python, Shell | Node.js |
-| **Frameworks** | Atlantis | Atlantis |
-| **Features** | SSM Parameters | API Gateway, Lambda, CloudWatch Logs, CloudWatch Alarms |
+| **Frameworks** | Atlantis | Atlantis, Sharp |
+| **Features** | SSM Parameters, Jest Tests | S3, SQS, Lambda, Sharp Layer, CloudWatch Logs, CloudWatch Alarms |
 
 > **Ready-to-Deploy-and-Run** with the [63Klabs Atlantis Templates and Scripts Platform for Serverless Deployments on AWS](https://github.com/63Klabs/atlantis)
 
-## Tutorial
+## Features
 
-> Note: To keep this example VERY basic and simple, concepts such as routing, caching, and advanced monitoring are not used. For near production-ready examples, review the the other Atlantis starter applications.
+- **Image resizing** into 6 size tiers (xxLarge, xLarge, large, medium, small, thumb) with aspect ratio preservation
+- **WebP variant generation** alongside original format outputs (configurable)
+- **EXIF metadata extraction** and `metadata.json` generation per image
+- **JSON metadata upload and merge** for updating descriptions, captions, and credits without re-uploading images
+- **Dynamic output bucket routing** via S3 object tags (`ImageOutputBucket`, `ImageOutputPath`)
+- **Bucket authorization** via `AllowImageResizerEvents` tag on destination buckets
+- **Source bucket lifecycle management** with configurable expiration and archive modes
+- **Comprehensive test suite** with unit tests and property-based tests (fast-check)
 
-1. Read the [Atlantis Tutorials introductory page](https://github.com/63Klabs/atlantis-tutorials)
-2. Then perform the steps outlined in the [Basic API Gateway with Lambda Node.js tutorial](https://github.com/63Klabs/atlantis-tutorials/tree/main/tutorials/00-basic-api-gateway-with-lambda-written-in-node).
+## Quick Start
+
+1. Read the [Deployment Guide](./DEPLOYMENT.md) for repository setup and pipeline configuration
+2. Upload an image to the source bucket `uploads/` prefix with required object tags:
+
+```bash
+aws s3api put-object \
+  --bucket SOURCE_BUCKET_NAME \
+  --key uploads/my-photo.jpg \
+  --body ./my-photo.jpg \
+  --tagging "ImageOutputBucket=my-output-bucket&ImageOutputPath=posts/2026-01-15"
+```
+
+3. The pipeline processes the image automatically — resized variants and `metadata.json` appear in the output bucket
+
+See [End-User Documentation](./docs/end-user/README.md) for full upload instructions and tag reference.
 
 ## Architecture
 

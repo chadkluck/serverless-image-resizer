@@ -83,16 +83,16 @@ Prefix-ProjectId-StageId-Resource
 S3 buckets have alternatives:
 
 ```
-Prefix-ProjectId-StageId-Region-AccountId (specific deployment instance, no Resource identifier)
-Prefix-ProjectId-Region-AccountId (shared instance, no Resource identifier)
+Prefix-ProjectId-StageId-AccountId-Region-an (specific deployment instance, no Resource identifier, Regional bucket)
+Prefix-ProjectId-AccountId-Region-an (shared instance, no Resource identifier, Regional bucket)
 Prefix-ProjectId-StageId-Resource (not preferred)
 ```
 
 Or, if the organization requires an additional `S3OrgPrefix` identifier:
 
 ```
-S3BucketNameOrgPrefix-Prefix-ProjectId-StageId-Region-AccountId (specific deployment instance, no Resource identifier)
-S3BucketNameOrgPrefix-Prefix-ProjectId-Region-AccountId (shared instance, no Resource identifier)
+S3BucketNameOrgPrefix-Prefix-ProjectId-StageId-AccountId-Region-an (specific deployment instance, no Resource identifier, Regional bucket)
+S3BucketNameOrgPrefix-Prefix-ProjectId-AccountId-Region-an (shared instance, no Resource identifier, Regional bucket)
 S3BucketNameOrgPrefix-Prefix-ProjectId-StageId-Resource (not preferred)
 ```
 
@@ -111,13 +111,22 @@ These names will be provided to the CloudFormation template as parameters (Prefi
 Correct example:
 
 ```
-acme-person-api-test-GetPersonFunction
-acme-schedules-prod-RefreshStepFunction
-acme-schedules-prod-Sessions
-acme-schedules-test-ApiResponseCount
-acorp-acme-orders-test-123456789012-xy-east
-acorp-acme-orders-123456789012-xy-east
+Lambda: acme-person-api-test-GetPerson
+StepFunction: acme-schedules-prod-Refresh
+DynamoDB: acme-schedules-prod-Sessions
+DynamoDB: acme-schedules-test-ApiResponseCount
+S3: acme-orders-test-123456789012-xy-east-1-an
+S3: acorp-acme-orders-123456789012-xy-east-1-an
+S3: acorp-acme-orders-logs-123456789012-xy-east-1-an
 ```
+
+#### S3 
+
+Use S3 Regional bucket name spaces unless otherwise requested.
+
+In some cases, a short Resource name (lower case) may be included after `ProjectId-StageId` if it helps identify the purpose of the bucket beyond the typical project identifier.
+
+However, since bucket names are limited to 63 characters, and `-AccountId-Region-an` takes up about a third of that, and `S3BucketNameOrgPrefix-Prefix-ProjectId-StageId` can also take up a substantial amount, include a `Resource` descriptor only if necessary (e.g. multiple buckets in the same stack, or multiple buckets across shared Project stacks)
 
 ### 3.3 IAM Policies – Principle of Least Privilege
 

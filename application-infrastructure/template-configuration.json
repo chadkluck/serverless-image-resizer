@@ -1,10 +1,8 @@
 {
   "Parameters": {
-    "ApiPathBase": "$PROJECT_ID$-$STAGE_ID$",
-    "ApiGatewayLoggingEnabled": "FALSE"
   },
   "Tags": {
-    "Name": "Hello World Web Service API $PREFIX$-$PROJECT_ID$",
+    "Name": "Image Resizer $PREFIX$-$PROJECT_ID$",
     "CostCenter": "1234-X",
     "Creator": "nowhere@example",
     "Owner": "nowhere@example",

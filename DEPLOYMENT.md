@@ -10,6 +10,16 @@ This application is **Ready-to-Deploy-and-Run** with the [63Klabs Atlantis Templ
 
 Follow your organization's guidelines for repository and pipeline management.
 
+## Build Process
+
+The `buildspec.yml` automates the following steps during CodeBuild:
+
+1. **Install Lambda function dependencies** — runs `npm install --production` in `src/lambda/functions/processor/`
+2. **Build Sharp layer** — runs `npm install --arch=arm64 --platform=linux` in `src/lambda/layers/sharp-arm64/nodejs/` to compile the Sharp native binary for the Lambda arm64 runtime
+3. **Run tests** — installs dev dependencies and executes `npx jest --config test/jest.config.mjs --ci --coverage` for the full test suite (unit + property-based tests)
+4. **SSM parameter setup** — creates any required SSM parameters via build scripts
+5. **SAM package** — packages the CloudFormation template and uploads artifacts to S3
+
 ## Why Use Atlantis?
 
 Like any other project, you can skip the Atlantis platform and go at it on your own using `sam deploy` from the CLI within the application-infrastructure directory.
@@ -24,7 +34,6 @@ Using the Atlantis SAM Config scripts in your organization's central infrastruct
 
 ```bash
 ./cli/create_repo.py YOUR_REPO_NAME
-# Choose 00-basic-apigw-lambda-nodejs.zip
 
 # Create a pipeline for the test branch
 ./cli/config.py pipeline PREFIX YOUR_PROJECT_ID test

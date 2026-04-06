@@ -50,21 +50,32 @@ phases:
 
   pre_build:
     commands:
-      
-      # Application Environment: Install NPM dependencies needed for application environment
+
+      # Application Environment: Install Lambda function dependencies
       - ls -l -a
-      - cd application-infrastructure/src
+      - cd application-infrastructure/src/lambda/functions/processor
       - npm install --production
 
       # FAIL the build if npm audit has vulnerabilities it can't fix
-      # Perform a fix to move us forward, then check to make sure there were no unresolved high fixes
       - npm audit fix --force
       - npm audit --audit-level=high
-      
-      # Go back to application-infrastructure directory
+
+      # Go back to root directory
+      - cd ../../../../..
+
+      # Build Sharp layer (arm64/linux native binary)
+      - cd application-infrastructure/src/lambda/layers/sharp-arm64/nodejs
+      - npm install --arch=arm64 --platform=linux
+      - cd ../../../../../..
+
+      # Install dev dependencies and run tests
+      - cd application-infrastructure
+      - npm install
+      - npx jest --config test/jest.config.mjs --ci --coverage
       - cd ..
 
       # Create a parameter in SSM Parameter store if it does not yet exist:
+      - cd application-infrastructure
       - python3 ./build-scripts/generate-put-ssm.py ${PARAM_STORE_HIERARCHY}ExampleParameter
       
   build:
