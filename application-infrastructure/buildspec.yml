@@ -64,10 +64,11 @@ phases:
       - cd ../../../../..
 
       # Build Sharp layer (arm64/linux native binary)
-      # Use npm config to force the correct platform since --arch/--platform flags
-      # are unreliable for Sharp's optional dependency resolution
+      # CodeBuild runs on x64 but we need arm64 binaries for Lambda.
+      # Use --force to bypass npm's platform check since @img/sharp-linux-arm64
+      # is explicitly listed as a dependency for the arm64 Lambda runtime.
       - cd application-infrastructure/src/lambda/layers/sharp-arm64/nodejs
-      - npm install --cpu=arm64 --os=linux --include=optional
+      - npm install --force
       - cd ../../../../../..
 
       # Install dev dependencies and run tests
