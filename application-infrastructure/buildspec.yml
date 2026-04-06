@@ -69,8 +69,10 @@ phases:
       - cd ../../../../../..
 
       # Install dev dependencies and run tests
+      # NODE_ENV may be set to 'production' by the pipeline, which causes
+      # npm install to skip devDependencies. Override it for the test step.
       - cd application-infrastructure
-      - npm install
+      - NODE_ENV=development npm install
       - npm run test:ci
       - cd ..
 
