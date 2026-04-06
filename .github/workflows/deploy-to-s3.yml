@@ -1,0 +1,54 @@
+name: Deploy Release to S3
+
+on:
+  release:
+    types: [published]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    
+    permissions:
+      id-token: write
+      contents: read
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v6
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install metadata script dependencies
+        run: pip install requests
+
+      - name: Set project name
+        run: echo "PROJECT_NAME=${GITHUB_REPOSITORY#*atlantis-starter-}" >> $GITHUB_ENV
+
+      - name: Generate sidecar metadata
+        run: |
+          python scripts/generate-sidecar-metadata.py \
+            --repo-path . \
+            --github-repo ${{ github.repository }} \
+            --output ${{ env.PROJECT_NAME }}.json \
+            --pretty
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v6
+        with:
+          role-to-assume: arn:aws:iam::${{ secrets.AWS_RELEASE_ACCT }}:role/github-actions-role
+          aws-region: ${{ secrets.AWS_RELEASE_REGION }}
+
+      - name: Copy release to S3
+        env:
+          AWS_RELEASE_BUCKET: ${{ vars.AWS_RELEASE_BUCKET }}
+          AWS_RELEASE_BUCKET_APP_STARTER_PATH: ${{ vars.AWS_RELEASE_BUCKET_APP_STARTER_PATH }}
+        run: |
+          # Create a zip of the release - we'll rename it during upload
+          zip -r release.zip . -x "*.git/*" "*.DS_Store" "*.env" "*.vscode/*" "*__pycache__/*" "*node_modules/*" # since we running from a repo this should not be an issue, but we'll exclude just in case
+
+          # Copy to S3
+          aws s3 cp release.zip "s3://${AWS_RELEASE_BUCKET}${AWS_RELEASE_BUCKET_APP_STARTER_PATH}${{ env.PROJECT_NAME }}.zip"
+          aws s3 cp "${{ env.PROJECT_NAME }}.json" "s3://${AWS_RELEASE_BUCKET}${AWS_RELEASE_BUCKET_APP_STARTER_PATH}${{ env.PROJECT_NAME }}.json"

@@ -1,0 +1,93 @@
+version: 0.2
+
+# BUILD ENVIRONMENT VARIABLES are specified in Pipeline template for CodeBuild
+# You can view environment variables and values for this CodeBuild project:
+# AWS Web Console >> CodeBuild >> Build >> Projects >> [this project] >> [build run] >> Environment Variables
+# 
+# You can also run the command `printenv`
+#
+# Use BUILD ENVIRONMENT VARIABLES as conditionals, customizations, or parameters/arguments for scripts
+
+phases:
+  install:
+    runtime-versions:
+      nodejs: latest
+      python: latest
+    commands:
+
+      - ls -l -a
+
+      # Build Environment information for debugging purposes
+      - python3 --version
+      - node --version
+      - aws --version
+
+      # We do not want to install dev dependencies in the application environment
+      # You could move things around if you wanted to install dev dependencies in 
+      # the build environment first to run tests or npm builds prior to deploying.
+      # Then remove the installed packages, set the NODE_ENV to production, and 
+      # install the production dependencies before deploying artifacts.
+      # Dev dependencies should not be installed in the application environment.
+      - echo "NODE_ENV is $NODE_ENV"
+
+      # Configure pip cache directory
+      - mkdir -p /root/.cache/pip
+      - pip config set global.cache-dir /root/.cache/pip
+
+      # Set npm caching (This 'offline' cache is still tar zipped, but it helps.) - https://blog.mechanicalrock.io/2019/02/03/monorepos-aws-codebuild.html
+      - npm config -g set prefer-offline true
+      - npm config -g set cache /root/.npm
+      - npm config get cache
+
+      # Build Environment: Install Python dependencies for Build Scripts if build-scripts/requirements.txt exists
+      - |
+        if [ -f "build-scripts/requirements.txt" ]; then
+          echo "Installing Python dependencies for build scripts"
+          pip install -r build-scripts/requirements.txt
+        else
+          echo "No build-scripts/requirements.txt found, skipping pip install"
+        fi
+
+  pre_build:
+    commands:
+      
+      # Application Environment: Install NPM dependencies needed for application environment
+      - ls -l -a
+      - cd application-infrastructure/src
+      - npm install --production
+
+      # FAIL the build if npm audit has vulnerabilities it can't fix
+      # Perform a fix to move us forward, then check to make sure there were no unresolved high fixes
+      - npm audit fix --force
+      - npm audit --audit-level=high
+      
+      # Go back to application-infrastructure directory
+      - cd ..
+
+      # Create a parameter in SSM Parameter store if it does not yet exist:
+      - python3 ./build-scripts/generate-put-ssm.py ${PARAM_STORE_HIERARCHY}ExampleParameter
+      
+  build:
+    commands:
+
+      # There is sometimes a bug that causes the alias to not be updated correctly (see comment in template.yml for AppFunction.Properties.AutoPublishCodeSha256)
+      - python3 ./build-scripts/update_template_timestamp.py template.yml
+
+      # Replace placeholders in the template-configuration.json file
+      - python3 ./build-scripts/update_template_configuration.py template-configuration.json
+
+      # Use CloudFormation to package the application infrastructure and code that was placed in the S3 Artifacts Bucket (usually something like `cf-artifacts-<region>-<account-id>` or `cf-templates-randomchars-<region>`).
+      - aws cloudformation package --template template.yml --s3-bucket $S3_ARTIFACTS_BUCKET --output-template template-export.yml
+
+      # list files in the artifacts
+      - ls -l -a
+
+artifacts:
+  files:
+    - 'application-infrastructure/**/*'
+
+# add cache
+cache:
+  paths:
+    - '/root/.npm/**/*'
+    - '/root/.cache/pip/**/*'

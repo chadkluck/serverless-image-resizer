@@ -1,0 +1,9 @@
+{
+  "name": "atlantis-starter-00-basic-apigw-lambda-nodejs",
+  "version": "0.0.1",
+  "description": "Basic API Gateway with Lambda - Node.js",
+  "main": "index.js",
+  "repository": "https://github.com/63klabs/atlantis-starter-00-basic-apigw-lambda-nodejs",
+  "author": "63Klabs",
+  "license": "MIT"
+}
