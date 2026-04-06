@@ -64,11 +64,12 @@ phases:
       - cd ../../../../..
 
       # Build Sharp layer (arm64/linux native binary)
-      # The .npmrc in the layer directory forces cpu=arm64, os=linux, libc=glibc
-      # so npm resolves the correct platform-specific Sharp binary even on x64 CodeBuild.
+      # Set npm config env vars to force cross-platform resolution for arm64 Lambda.
+      # CLI flags like --arch/--platform are unreliable; env vars override npm's
+      # platform detection at the config level.
       - cd application-infrastructure/src/lambda/layers/sharp-arm64/nodejs
       - rm -rf node_modules package-lock.json
-      - npm install
+      - npm_config_arch=arm64 npm_config_platform=linux npm install
       - cd ../../../../../..
 
       # Install dev dependencies and run tests
