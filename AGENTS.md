@@ -28,11 +28,11 @@ Applications deployed via this repository follow the Golden Path for cloud devel
 
 Shared templates for S3, DynamoDB, caching, networking (CloudFront/Route53), and pipelines come from:
 
-* **Atlantis Platform Template Repo:** [https://github.com/63Klabs/atlantis-cfn-template-repo-for-serverless-deployments](https://github.com/63Klabs/atlantis-cfn-template-repo-for-serverless-deployments)
+* **Atlantis Platform Template Repo:** [https://github.com/63Klabs/atlantis-sam-templates](https://github.com/63Klabs/atlantis-sam-templates)
 
 Scripts for configuring and Deploying automated CodePipeline stacks come from:
 
-* **Atlantis SAM Configuration Repo:** [https://github.com/63Klabs/atlantis-cfn-configuration-repo-for-serverless-deployments](https://github.com/63Klabs/atlantis-cfn-configuration-repo-for-serverless-deployments)
+* **Atlantis SAM Configuration Repo:** [https://github.com/63Klabs/atlantis-sam-config-scripts](https://github.com/63Klabs/atlantis-sam-config-scripts)
 
 The organization deploying the application is reponsible for their own organizion-wide copy of a SAM configuration repository. The SAM Config repository manages `samconfig` files and deployed infrastructure using scripts, expanding the capabilities of `sam deploy`. While a `samconfig` file may be kept in this repository for development deployment, actual deployments should occur using the scripts to ensure proper tagging, resource mangement, and automation.
 
@@ -186,7 +186,7 @@ AI-generated deployment instructions must follow this workflow.
 * Conditional logic should be built into the template and any environment variables based on the Deployment Environment (TEST/PROD)
 * Tests, Builds, and Deployment must be automated and provided in the buildspec.yml file used by the Pipeline.
 * A `samconfig` file local to the application's repository may only be used for development purposes.
-* CloudFormation stacks deployed by SAM are the first choice. If complex or programmatic logic requires the use of AWS CDK or AWS SDK, the CDK MUST manage BOTH deployment and a clean tear down. The CDK MUST also include the tags (resolving any placeholders) found in `application-infrastructure/template-configuration.json`. (See the `application-infrastructure/build-scripts/update_template_configuration.py` script for an example of how placeholders are resolved from environment variables.)
+* CloudFormation stacks deployed by SAM are the first choice. If complex or programmatic logic requires the use of AWS CDK or AWS SDK, the SDK or CDK MUST manage BOTH deployment and a clean tear down. The SDK or CDK MUST also include the tags (resolving any placeholders) found in `application-infrastructure/template-configuration.json`. (See the `application-infrastructure/build-scripts/update_template_configuration.py` script for an example of how placeholders are resolved from environment variables.)
 * AWS CLI commands may be provided as instructions to:
   * Copy files to S3
   * Set SSM Parameters
@@ -198,7 +198,7 @@ AI suggestions **must not** recommend:
 * Creating custom pipeline YAML/JSON
 * Editing CodePipeline templates
 * Using Terraform
-* Using AWS CLI, AWS CDK, AWS SDK without proper tagging and clean-up
+* Using AWS CLI, AWS CDK, AWS SDK **without** proper tagging and clean-up
 
 ## 5. Architectural Guidelines for AI-Generated Code
 
