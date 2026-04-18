@@ -22,7 +22,7 @@ This repository was created using [chadkluck/serverless-image-resizer](https://g
 
 ### Starter Code
 
-If a developer using the Starter finds a **vulnerability in the code or configuration provided by the starter**, they are encouraged to report it using the [Security and quality](https://github.com/chadkluck/serverless-image-resizer/security) section of the original GitHub repository.
+If a developer using serverless-image-resizer finds a **vulnerability in the code or configuration provided by the starter**, they are encouraged to report it using the [Security and quality](https://github.com/chadkluck/serverless-image-resizer/security) section of the original GitHub repository.
 
 ### Custom Code
 
