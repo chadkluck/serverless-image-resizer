@@ -1,6 +1,6 @@
 # Deployment Guide
 
-This application is **Ready-to-Deploy-and-Run** with the [63Klabs Atlantis Templates and Scripts Platform for Serverless Deployments on AWS](https://github.com/63Klabs/atlantis)
+This application is **Ready-to-Deploy-and-Run** with the [63Klabs Atlantis DevOps Platform for Serverless Deployments on AWS](https://atlantis.63klabs.net)
 
 - Use the Atlantis scripts from your organization's central SAM Config infrastructure repository to manage your application's repository and deployment.
 - Add a pipeline to each branch in your repository you want to deploy from (`test`, `beta`, `main`)
@@ -42,22 +42,19 @@ Using the Atlantis SAM Config scripts in your organization's central infrastruct
 ./cli/deploy.py pipeline PREFIX YOUR_PROJECT_ID test
 ```
 
+This will now kick off your first deployment. Make sure it deploys without errors before going to your application repository to make changes.
+
+## Development and Deploy Process
+
 Clone the repository to your local machine and perform your first merge:
 
 ```bash
+cd ../TO_A_DIR_OUTSIDE_YOUR_SAM_CONFIG_DIR
+
 git clone HTTPS_CLONE_URL
 
 cd YOUR_CLONED_REPO
-
-git switch dev
-git switch test
-git merge dev
-git push
 ```
-
-This will now kick off your first deployment. Make sure it deploys without errors before going back to `dev` and making changes.
-
-## Development and Deploy Process
 
 Always make and commit your changes in `dev`
 

@@ -8,7 +8,7 @@ An event-driven image processing pipeline on AWS. Images uploaded to a source S3
 | **Frameworks** | Atlantis | Atlantis, Sharp |
 | **Features** | SSM Parameters, Jest Tests | S3, SQS, Lambda, Sharp Layer, CloudWatch Logs, CloudWatch Alarms |
 
-> **Ready-to-Deploy-and-Run** with the [63Klabs Atlantis Templates and Scripts Platform for Serverless Deployments on AWS](https://github.com/63Klabs/atlantis)
+> **Ready-to-Deploy-and-Run** with the [63Klabs Atlantis DevOps Platform for Serverless Deployments on AWS](https://atlantis.63klabs.net)
 
 ## Features
 
